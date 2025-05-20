@@ -39,7 +39,7 @@ export const arrayBufferToBigInt = (arrayBuffer: ArrayBuffer): bigint => {
  * @param str Any UTF8 string, like a username, email, or password
  */
 export function stringToArrayBuffer(str: string): ArrayBuffer {
-  return new TextEncoder().encode(str).buffer;
+  return new TextEncoder().encode(str).buffer as ArrayBuffer;
 }
 
 /**
@@ -58,9 +58,9 @@ export const padStartArrayBuffer = (
     const tmp = new Uint8Array(targetLength);
     tmp.fill(0, 0, targetLength - u8.length);
     tmp.set(u8, targetLength - u8.length);
-    return tmp;
+    return tmp.buffer;
   }
-  return u8;
+  return u8.buffer;
 };
 
 export function hash(
@@ -73,7 +73,7 @@ export function hash(
     target.set(new Uint8Array(arrays[i]), offset);
     offset += arrays[i].byteLength;
   }
-  return parameters.H(target);
+  return parameters.H(target.buffer);
 }
 
 export function hashPadded(
