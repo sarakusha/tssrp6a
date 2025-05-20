@@ -3,3 +3,5 @@ demo/bigint-mod-arith.iife.js
 node_modules
 reports
 .nyc_output
+.idea/
+.DS_Store

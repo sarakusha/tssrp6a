@@ -1,45 +1,53 @@
 {
-  "name": "tssrp6a",
-  "version": "3.0.0",
+  "name": "@sarakusha/tssrp6a",
+  "version": "3.0.1",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "files": [
-    "dist/**/*",
-    "*.ts"
+    "dist/*"
   ],
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "default": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
   "private": false,
   "devDependencies": {
-    "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@magic-works/ttypescript-browser-like-import-transformer": "^3.0.0",
-    "@types/crypto-js": "3.1.43",
-    "@types/jsbn": "1.2.29",
-    "@types/node": "^15.0.3",
-    "@typescript-eslint/eslint-plugin": "^4.23.0",
-    "@typescript-eslint/parser": "^4.23.0",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@magic-works/ttypescript-browser-like-import-transformer": "^4.0.0",
+    "@types/crypto-js": "4.2.2",
+    "@types/jsbn": "1.2.33",
+    "@types/node": "^22.15.19",
+    "@types/node-forge": "^1.3.11",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
     "@zoltu/typescript-transformer-append-js-extension": "^1.0.1",
-    "eslint": "^7.26.0",
-    "nyc": "^15.1.0",
-    "prettier": "^2.3.0",
-    "source-map-support": "^0.5.19",
+    "eslint": "^9.27.0",
+    "nyc": "^17.1.0",
+    "prettier": "^3.5.3",
+    "source-map-support": "^0.5.21",
     "tap-diff": "^0.1.1",
-    "tap-junit": "^4.2.0",
-    "tape": "^5.2.2",
+    "tap-junit": "^5.0.4",
+    "tape": "^5.9.0",
     "tape-promise": "^4.0.0",
-    "ts-node": "^9.1.1",
-    "ttypescript": "^1.5.12",
-    "typescript": "^4.2.4"
+    "ts-node": "^10.9.2",
+    "tsup": "^8.5.0",
+    "ttypescript": "^1.5.15",
+    "typescript": "^5.8.3"
   },
   "scripts": {
-    "build": "yarn tsc --build tsconfig.json",
-    "build:esm": "yarn ttsc --project tsconfig.esm.json",
-    "test": "yarn tape 'test/**/*.test.*' -r ts-node/register",
-    "test:report": "TAPE_RAW_OUTPUT=1 yarn test | yarn tap-junit -o reports -n unit",
+    "build": "tsup src/index.ts --dts --format esm,cjs --out-dir dist",
+    "test": "pnpm tape 'test/**/*.test.*' -r ts-node/register",
+    "test:report": "TAPE_RAW_OUTPUT=1 pnpm test | pnpm tap-junit -o reports -n unit",
     "nyc": "nyc -e .ts -x 'src/cross-env-crypto.ts' -x 'test/**'",
-    "coverage": "yarn nyc yarn test:report",
-    "coverage:report": "yarn nyc --reporter cobertura --reporter html --report-dir reports/unit yarn test:report",
-    "coverage:number": "yarn coverage | grep 'All files' | cut -d '|' -f 5 | sed 's/ //g'",
+    "coverage": "pnpm nyc pnpm test:report",
+    "coverage:report": "pnpm nyc --reporter cobertura --reporter html --report-dir reports/unit pnpm test:report",
+    "coverage:number": "pnpm coverage | grep 'All files' | cut -d '|' -f 5 | sed 's/ //g'",
     "lint_formatter": "prettier -c 'src/**' 'test/**'",
-    "lint": "yarn lint_formatter && yarn eslint src test",
+    "lint": "pnpm lint_formatter && pnpm eslint src test",
     "format": "prettier --write 'src/**' 'test/**'"
   },
   "description": "SRP6a client and server lib",
@@ -51,5 +59,9 @@
     "srp6a",
     "authentication"
   ],
-  "homepage": "https://github.com/midonet/tssrp6a"
+  "homepage": "https://github.com/midonet/tssrp6a",
+  "dependencies": {
+    "node-forge": "^1.3.1"
+  },
+  "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977"
 }
