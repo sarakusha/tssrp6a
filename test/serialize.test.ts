@@ -12,8 +12,8 @@ import { test } from "./tests";
 const TEST_ROUTINES = new SRPRoutines(new SRPParameters());
 
 test("#SRP serialization", async (t) => {
-  const testUsername = generateRandomString(10);
-  const testPassword = generateRandomString(15);
+  const testUsername = await generateRandomString(10);
+  const testPassword = await generateRandomString(15);
 
   const { s: salt, v: verifier } = await createVerifierAndSalt(
     TEST_ROUTINES,

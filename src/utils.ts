@@ -1,6 +1,6 @@
-import { SRPParameters } from "./parameters";
-import { SRPRoutines } from "./routines";
-import { crossEnvCrypto } from "./cross-env-crypto";
+import type { SRPParameters } from "./parameters";
+import type { SRPRoutines } from "./routines";
+import { getCompatibleCrypto } from "./cross-env-crypto";
 
 const ZERO: bigint = BigInt(0);
 const ONE: bigint = BigInt(1);
@@ -92,22 +92,25 @@ export function hashPadded(
  * @param characterCount The length of the result string.
  * @return The string.
  */
-export function generateRandomString(characterCount: number = 10) {
+export async function generateRandomString(characterCount: number = 10) {
+  const crypto = await getCompatibleCrypto();
   const u8 = new Uint8Array(Math.ceil(Math.ceil(characterCount / 2))); // each byte has 2 hex digits
-  crossEnvCrypto.randomBytes(u8);
+  crypto.randomBytes(u8);
   return u8
     .reduce((str, i) => {
       const hex = i.toString(16).toString();
       if (hex.length === 1) {
-        return str + "0" + hex;
+        return `${str}0${hex}`;
       }
       return str + hex;
     }, "")
     .slice(0, characterCount); // so we don't go over when characterCount is odd
 }
-
-export function generateRandomBigInt(numBytes: number = 16): bigint {
-  return arrayBufferToBigInt(generateRandom(numBytes));
+export async function generateRandomBigInt(
+  numBytes: number = 16,
+): Promise<bigint> {
+  const buffer = await generateRandom(numBytes);
+  return arrayBufferToBigInt(buffer);
 }
 
 export async function createVerifier(
@@ -175,7 +178,7 @@ export function modPow(x: bigint, pow: bigint, mod: bigint): bigint {
   }
   let result: bigint = ONE;
   while (pow > ZERO) {
-    if (pow % TWO == ONE) {
+    if (pow % TWO === ONE) {
       result = (x * result) % mod;
       pow -= ONE;
     } else {
@@ -186,8 +189,9 @@ export function modPow(x: bigint, pow: bigint, mod: bigint): bigint {
   return result;
 }
 
-const generateRandom = (numBytes: number): ArrayBuffer => {
+const generateRandom = async (numBytes: number): Promise<ArrayBuffer> => {
+  const crypto = await getCompatibleCrypto();
   const u8 = new Uint8Array(numBytes);
-  crossEnvCrypto.randomBytes(u8);
+  crypto.randomBytes(u8);
   return u8.buffer;
 };

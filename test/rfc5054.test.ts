@@ -21,21 +21,21 @@ test("#SRP6aRFC5054", async (t) => {
       return this.hash(stringToArrayBuffer(`${I}:${P}`));
     }
 
-    public generatePrivateValue(): bigint {
-      return (
+    public generatePrivateValue(): Promise<bigint> {
+      return Promise.resolve(
         BigInt(
           "0x60975527035CF2AD1989806F0407210BC81EDC04E2762A56AFD529DDDA2D4393",
-        ) % this.parameters.primeGroup.N
+        ) % this.parameters.primeGroup.N,
       );
     }
   }
 
   class TestServerRoutines extends SRPRoutines {
-    public generatePrivateValue(): bigint {
-      return (
+    public generatePrivateValue(): Promise<bigint> {
+      return Promise.resolve(
         BigInt(
           "0xE487CB59D31AC550471E81F00F6928E01DDA08E974A004F49E61F5D105284D20",
-        ) % this.parameters.primeGroup.N
+        ) % this.parameters.primeGroup.N,
       );
     }
   }

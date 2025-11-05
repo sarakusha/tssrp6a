@@ -1,5 +1,5 @@
-import { SRPParameters } from "./parameters";
-import { SRPRoutines } from "./routines";
+import type { SRPParameters } from "./parameters";
+import type { SRPRoutines } from "./routines";
 import { modPow } from "./utils";
 
 // Variable names match the RFC (I, IH, S, b, B, salt, b, A, M1, M2...)
@@ -21,7 +21,7 @@ export class SRPServerSession {
      */
     verifier: bigint,
   ) {
-    const b = this.routines.generatePrivateValue();
+    const b = await this.routines.generatePrivateValue();
     const k = await this.routines.computeK();
     const B = computeServerPublicValue(
       this.routines.parameters,
@@ -151,10 +151,10 @@ export class SRPServerSessionStep1 {
     return new SRPServerSessionStep1(
       routines,
       state.identifier,
-      BigInt("0x" + state.salt),
-      BigInt("0x" + state.verifier),
-      BigInt("0x" + state.b),
-      BigInt("0x" + state.B),
+      BigInt(`0x${state.salt}`),
+      BigInt(`0x${state.verifier}`),
+      BigInt(`0x${state.b}`),
+      BigInt(`0x${state.B}`),
     );
   }
 }

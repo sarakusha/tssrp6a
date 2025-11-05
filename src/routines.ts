@@ -1,13 +1,13 @@
-import { SRPParameters } from "./parameters";
+import type { SRPParameters } from "./parameters";
 import {
+  arrayBufferToBigInt,
   bigIntToArrayBuffer,
   generateRandomBigInt,
   hash,
-  hashPadded,
-  stringToArrayBuffer,
-  arrayBufferToBigInt,
   hashBitCount,
+  hashPadded,
   modPow,
+  stringToArrayBuffer,
 } from "./utils";
 
 /**
@@ -78,12 +78,14 @@ export class SRPRoutines {
     );
   }
 
-  public generatePrivateValue(): bigint {
+  public async generatePrivateValue(): Promise<bigint> {
     const numBits = Math.max(256, this.parameters.NBits);
     let bi: bigint;
 
     do {
-      bi = generateRandomBigInt(numBits / 8) % this.parameters.primeGroup.N;
+      bi =
+        (await generateRandomBigInt(numBits / 8)) %
+        this.parameters.primeGroup.N;
     } while (bi === BigInt(0));
 
     return bi;

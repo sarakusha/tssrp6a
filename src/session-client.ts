@@ -1,4 +1,4 @@
-import { SRPRoutines } from "./routines";
+import type { SRPRoutines } from "./routines";
 
 // Variable names match the RFC (I, IH, S, b, B, salt, b, A, M1, M2...)
 
@@ -63,7 +63,7 @@ export class SRPClientSessionStep1 {
     }
     // TODO can we run any of these promises in parallel?
     const x = await this.routines.computeXStep2(salt, this.IH);
-    const a = this.routines.generatePrivateValue();
+    const a = await this.routines.generatePrivateValue();
     const A = this.routines.computeClientPublicValue(a);
     const k = await this.routines.computeK();
     const u = await this.routines.computeU(A, B);

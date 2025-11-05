@@ -15,14 +15,14 @@ import { test } from "./tests";
 const ZERO = BigInt(0);
 const ONE = BigInt(1);
 
-test("#generateRandomString", (t) => {
+test("#generateRandomString", async (t) => {
   t.plan(2);
-  t.equals(10, generateRandomString().length, "Default length");
+  t.equals(10, (await generateRandomString()).length, "Default length");
   const actualLengths = new Array(32).fill(0);
   const expectedLengths = new Array(32).fill(0);
   for (let i = 0; i < 32; ++i) {
     expectedLengths[i] = i;
-    actualLengths[i] = generateRandomString(i).length;
+    actualLengths[i] = (await generateRandomString(i)).length;
   }
   t.deepEqual(expectedLengths, actualLengths, "Strings lengths are correct");
 });
@@ -54,7 +54,7 @@ test("#stringToArrayBuffer", (t) => {
 
 test("#createVerifierHexSalt errors", async (t) => {
   const routines = new SRPRoutines(new SRPParameters());
-  const salt = generateRandomBigInt();
+  const salt = await generateRandomBigInt();
   await t.rejects(() => createVerifier(routines, "", salt, "password"));
   await t.rejects(() => createVerifier(routines, " ", salt, "password"));
   await t.rejects(() =>
@@ -105,11 +105,11 @@ test("#paddArray", (t) => {
     "Same array for small target size",
   );
 
-  const paddedLibArray = padStartArrayBuffer(testHashArray, 4);
+  const paddedLibArray = padStartArrayBuffer(testHashArray.buffer, 4);
   t.equals(4, paddedLibArray.byteLength);
   t.deepEqual(Uint8Array.from([0, 1, 2, 3]), new Uint8Array(paddedLibArray));
 
-  const paddedLibArray2 = padStartArrayBuffer(testHashArray, 10);
+  const paddedLibArray2 = padStartArrayBuffer(testHashArray.buffer, 10);
   t.equals(10, paddedLibArray2.byteLength);
   t.deepEqual(
     Uint8Array.from([0, 0, 0, 0, 0, 0, 0, 1, 2, 3]),

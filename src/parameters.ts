@@ -1,4 +1,4 @@
-import { crossEnvCrypto } from "./cross-env-crypto";
+import { getCompatibleCrypto } from "./cross-env-crypto";
 
 export interface PrimeGroup {
   N: bigint; // the prime
@@ -65,9 +65,17 @@ SRPParameters.PrimeGroup = {
   },
 };
 
+// SRPParameters.H = {
+//   SHA1: crossEnvCrypto.hashFunctions.SHA1,
+//   SHA256: crossEnvCrypto.hashFunctions.SHA256,
+//   SHA384: crossEnvCrypto.hashFunctions.SHA384,
+//   SHA512: crossEnvCrypto.hashFunctions.SHA512,
+// };
+
+// Provide default hash functions using the environment crypto (Web Crypto API or Node webcrypto)
 SRPParameters.H = {
-  SHA1: crossEnvCrypto.hashFunctions.SHA1,
-  SHA256: crossEnvCrypto.hashFunctions.SHA256,
-  SHA384: crossEnvCrypto.hashFunctions.SHA384,
-  SHA512: crossEnvCrypto.hashFunctions.SHA512,
+  SHA1: (data: ArrayBuffer) => getCompatibleCrypto().then(crossEnvCrypto => crossEnvCrypto.hashFunctions.SHA1(data)),
+  SHA256: (data: ArrayBuffer) => getCompatibleCrypto().then(crossEnvCrypto => crossEnvCrypto.hashFunctions.SHA256(data)),
+  SHA384: (data: ArrayBuffer) => getCompatibleCrypto().then(crossEnvCrypto => crossEnvCrypto.hashFunctions.SHA384(data)),
+  SHA512: (data: ArrayBuffer) => getCompatibleCrypto().then(crossEnvCrypto => crossEnvCrypto.hashFunctions.SHA512(data)),
 };
