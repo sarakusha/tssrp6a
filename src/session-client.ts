@@ -1,9 +1,10 @@
 import type { SRPRoutines } from "./routines";
+import { encrypt, decrypt, decryptToString } from "./encryption";
 
 // Variable names match the RFC (I, IH, S, b, B, salt, b, A, M1, M2...)
 
 export class SRPClientSession {
-  constructor(private readonly routines: SRPRoutines) {}
+  constructor(private readonly routines: SRPRoutines) { }
   public async step1(
     /**
      * User identity
@@ -42,7 +43,7 @@ export class SRPClientSessionStep1 {
      * User identity/password hash
      */
     public readonly IH: ArrayBuffer,
-  ) {}
+  ) { }
 
   public async step2(
     /**
@@ -110,7 +111,7 @@ export class SRPClientSessionStep2 {
      * Shared session key "S"
      */
     public readonly S: bigint,
-  ) {}
+  ) { }
 
   public async step3(M2: bigint): Promise<void> {
     if (!M2) {
@@ -126,6 +127,35 @@ export class SRPClientSessionStep2 {
     if (computedM2 !== M2) {
       throw new Error("Bad server credentials");
     }
+  }
+
+  /**
+   * Encrypt data using the shared session key
+   */
+  public async encrypt(
+    data: string | ArrayBuffer,
+  ): Promise<{ iv: ArrayBuffer; ciphertext: ArrayBuffer }> {
+    return encrypt(this.S, data);
+  }
+
+  /**
+   * Decrypt data using the shared session key
+   */
+  public async decrypt(
+    iv: ArrayBuffer,
+    ciphertext: ArrayBuffer,
+  ): Promise<ArrayBuffer> {
+    return decrypt(this.S, iv, ciphertext);
+  }
+
+  /**
+   * Decrypt data and return as UTF-8 string
+   */
+  public async decryptToString(
+    iv: ArrayBuffer,
+    ciphertext: ArrayBuffer,
+  ): Promise<string> {
+    return decryptToString(this.S, iv, ciphertext);
   }
 
   public toJSON(): SRPClientSessionStep2State {

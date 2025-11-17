@@ -19,3 +19,4 @@ export {
   generateRandomBigInt,
   IVerifierAndSalt,
 } from "./utils";
+export { encrypt, decrypt, decryptToString } from "./encryption";

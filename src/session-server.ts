@@ -1,11 +1,12 @@
 import type { SRPParameters } from "./parameters";
 import type { SRPRoutines } from "./routines";
 import { modPow } from "./utils";
+import { encrypt, decrypt, decryptToString } from "./encryption";
 
 // Variable names match the RFC (I, IH, S, b, B, salt, b, A, M1, M2...)
 
 export class SRPServerSession {
-  constructor(private readonly routines: SRPRoutines) {}
+  constructor(private readonly routines: SRPRoutines) { }
 
   public async step1(
     /**
@@ -71,7 +72,7 @@ export class SRPServerSessionStep1 {
      * Serve public key "B"
      */
     public readonly B: bigint,
-  ) {}
+  ) { }
 
   /**
    * Compute the session key "S" without computing or checking client evidence
@@ -132,6 +133,41 @@ export class SRPServerSessionStep1 {
     const M2 = this.routines.computeServerEvidence(A, M1, S);
 
     return M2;
+  }
+
+  /**
+   * Encrypt data using the shared session key (must call sessionKey or step2 first)
+   */
+  public async encrypt(
+    A: bigint,
+    data: string | ArrayBuffer,
+  ): Promise<{ iv: ArrayBuffer; ciphertext: ArrayBuffer }> {
+    const S = await this.sessionKey(A);
+    return encrypt(S, data);
+  }
+
+  /**
+   * Decrypt data using the shared session key (must call sessionKey or step2 first)
+   */
+  public async decrypt(
+    A: bigint,
+    iv: ArrayBuffer,
+    ciphertext: ArrayBuffer,
+  ): Promise<ArrayBuffer> {
+    const S = await this.sessionKey(A);
+    return decrypt(S, iv, ciphertext);
+  }
+
+  /**
+   * Decrypt data and return as UTF-8 string
+   */
+  public async decryptToString(
+    A: bigint,
+    iv: ArrayBuffer,
+    ciphertext: ArrayBuffer,
+  ): Promise<string> {
+    const S = await this.sessionKey(A);
+    return decryptToString(S, iv, ciphertext);
   }
 
   public toJSON(): SRPServerSessionStep1State {
